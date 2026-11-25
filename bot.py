@@ -1,4 +1,15 @@
-elif query.data == "check_bingo":
+if user_id not in game_state["players"]: return
+        val_str = query.data.split("_")[1]
+        if val_str == "FREE": return
+        val = int(val_str)
+        
+        if val in game_state["drawn"]:
+            game_state["players"][user_id]["marked"].add(val)
+            await query.edit_message_reply_markup(reply_markup=build_keyboard(user_id))
+        else:
+            await query.answer("❌ ይህ ቁጥር ገና አልወጣም!", show_alert=True)
+
+    elif query.data == "check_bingo":
         if user_id not in game_state["players"] or not game_state["active"]: return
         player = game_state["players"][user_id]
         if check_win(player["card"], player["marked"]):
@@ -42,6 +53,7 @@ async def draw_numbers(context: ContextTypes.DEFAULT_TYPE):
         game_state["players"].clear()
 
 def main():
+    threading.Thread(target=run_health_server, daemon=True).start()
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_handler))
