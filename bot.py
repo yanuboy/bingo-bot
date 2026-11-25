@@ -53,6 +53,8 @@ async def draw_numbers(context: ContextTypes.DEFAULT_TYPE):
         game_state["players"].clear()
 
 def main():
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN አልተገኘም! እባክዎ Render Environment Variables ላይ BOT_TOKEN ያስገቡ።")
     threading.Thread(target=run_health_server, daemon=True).start()
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
